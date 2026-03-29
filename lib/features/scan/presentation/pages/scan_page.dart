@@ -95,9 +95,11 @@ class _ScanPageState extends State<ScanPage> {
     if (_selectedImagePath == null || _selectedImagePath!.trim().isEmpty) {
       setState(() {
         if (_isTbMode) {
-          _tbError = 'No image selected. Please pick a chest image before starting TB scan.';
+          _tbError =
+              'No image selected. Please pick a chest image before starting TB scan.';
         } else {
-          _eyeError = 'No image selected. Please pick an eye image before starting eye scan.';
+          _eyeError =
+              'No image selected. Please pick an eye image before starting eye scan.';
         }
       });
       return;
@@ -116,13 +118,17 @@ class _ScanPageState extends State<ScanPage> {
 
     try {
       if (_isTbMode) {
-        final result = await _dataSource.runTbScan(imagePath: _selectedImagePath!);
+        final result = await _dataSource.runTbScan(
+          imagePath: _selectedImagePath!,
+        );
         if (!mounted) return;
         setState(() {
           _tbResult = result;
         });
       } else {
-        final result = await _dataSource.runEyeScan(imagePath: _selectedImagePath!);
+        final result = await _dataSource.runEyeScan(
+          imagePath: _selectedImagePath!,
+        );
         if (!mounted) return;
         setState(() {
           _eyeResult = result;
@@ -163,54 +169,68 @@ class _ScanPageState extends State<ScanPage> {
   String _buildResultExplanation(Map<String, dynamic> result) {
     // Extract risk assessment
     final risk = result['risk']?.toString() ?? 'Unknown Risk';
-    
+
     // Extract task type
     final task = result['task']?.toString() ?? (_isTbMode ? 'tb' : 'eye');
-    
+
     final modeName = _isTbMode ? 'TB Screening' : 'Eye Scan';
-    
+
     // Build risk-aware description and next steps
     String description = '';
     String nextSteps = '';
-    
+
     if (task.toLowerCase().contains('tb')) {
       if (risk.toLowerCase().contains('high')) {
-        description = 'This chest X-ray analysis indicates signs consistent with tuberculosis. '
+        description =
+            'This chest X-ray analysis indicates signs consistent with tuberculosis. '
             'This is an AI-assisted screening result and requires clinical confirmation.';
-        nextSteps = 'This is a potential finding that requires urgent confirmation:\n'
+        nextSteps =
+            'This is a potential finding that requires urgent confirmation:\n'
             '• Consult a respiratory specialist or pulmonologist immediately\n'
             '• Get confirmatory tests: sputum smear microscopy, TB culture, or GeneXpert MTB/RIF\n'
             '• Do not delay - early diagnosis and treatment are critical';
       } else if (risk.toLowerCase().contains('low')) {
-        description = 'This chest X-ray analysis shows no obvious signs of tuberculosis. '
+        description =
+            'This chest X-ray analysis shows no obvious signs of tuberculosis. '
             'However, this is an AI-assisted screening result only.';
-        nextSteps = 'No immediate action required based on this screening:\n'
+        nextSteps =
+            'No immediate action required based on this screening:\n'
             '• Normal X-ray findings detected\n'
             '• If you have TB symptoms, consult a doctor for further evaluation\n'
             '• Regular screening recommended if at risk';
       } else {
-        description = 'The analysis result was generated. Please review the finding below.';
-        nextSteps = 'Next step: Consult with a healthcare provider to interpret the result '
+        description =
+            'The analysis result was generated. Please review the finding below.';
+        nextSteps =
+            'Next step: Consult with a healthcare provider to interpret the result '
             'in the context of clinical symptoms and risk factors.';
       }
     } else {
-      if (risk.toLowerCase().contains('high') || risk.toLowerCase().contains('positive')) {
-        description = 'This retinal image analysis indicates potential eye abnormality. '
+      if (risk.toLowerCase().contains('high') ||
+          risk.toLowerCase().contains('positive')) {
+        description =
+            'This retinal image analysis indicates potential eye abnormality. '
             'This is an AI-assisted screening result requiring professional evaluation.';
-        nextSteps = 'This may indicate a potential eye condition:\n'
+        nextSteps =
+            'This may indicate a potential eye condition:\n'
             '• Schedule an urgent appointment with an ophthalmologist\n'
             '• Bring this screening result to your consultation\n'
             '• Do not delay if experiencing vision changes or eye discomfort';
-      } else if (risk.toLowerCase().contains('low') || risk.toLowerCase().contains('negative')) {
-        description = 'This retinal image analysis appears normal based on AI evaluation. '
+      } else if (risk.toLowerCase().contains('low') ||
+          risk.toLowerCase().contains('negative')) {
+        description =
+            'This retinal image analysis appears normal based on AI evaluation. '
             'However, this is an AI-assisted screening result only.';
-        nextSteps = 'No immediate concerns detected:\n'
+        nextSteps =
+            'No immediate concerns detected:\n'
             '• Screening appears normal\n'
             '• Continue routine eye care and regular check-ups\n'
             '• Contact an ophthalmologist if you experience vision changes';
       } else {
-        description = 'The analysis result was generated. Please review the finding below.';
-        nextSteps = 'Next step: Consult with an eye care professional to interpret the result.';
+        description =
+            'The analysis result was generated. Please review the finding below.';
+        nextSteps =
+            'Next step: Consult with an eye care professional to interpret the result.';
       }
     }
 
@@ -299,10 +319,7 @@ class _ScanPageState extends State<ScanPage> {
                 _InfoCard(baseUrl: AppEnv.scanApiBaseUrl),
                 const SizedBox(height: 16),
                 if (!widget.lockMode)
-                  _ModeSwitch(
-                    mode: _mode,
-                    onModeChanged: _switchMode,
-                  ),
+                  _ModeSwitch(mode: _mode, onModeChanged: _switchMode),
                 if (!widget.lockMode) const SizedBox(height: 14),
                 const SizedBox(height: 14),
                 _UploadPanel(
@@ -328,7 +345,9 @@ class _ScanPageState extends State<ScanPage> {
                   result: activeResult,
                   error: activeError,
                   explanation: activeResult == null
-                      ? (activeError == null ? null : _buildErrorExplanation(activeError))
+                      ? (activeError == null
+                            ? null
+                            : _buildErrorExplanation(activeError))
                       : _buildResultExplanation(activeResult),
                 ),
               ],
@@ -360,7 +379,9 @@ class _InfoCard extends StatelessWidget {
         children: [
           Text(
             'Connected Scan Backend',
-            style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
+            style: AppTextStyles.titleMedium.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 6),
           SelectableText(
@@ -497,18 +518,19 @@ class _UploadPanel extends StatelessWidget {
         children: [
           Text(
             '$title Input Image',
-            style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
+            style: AppTextStyles.titleMedium.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 6),
-          Text(
-            guideText,
-            style: AppTextStyles.bodySmall,
-          ),
+          Text(guideText, style: AppTextStyles.bodySmall),
           const SizedBox(height: 6),
           Text(
             imageName == null ? 'No image selected' : 'Selected: $imageName',
             style: AppTextStyles.bodySmall.copyWith(
-              color: imageName == null ? AppColors.onSurfaceVariant : AppColors.primary,
+              color: imageName == null
+                  ? AppColors.onSurfaceVariant
+                  : AppColors.primary,
             ),
           ),
           const SizedBox(height: 12),
@@ -520,7 +542,10 @@ class _UploadPanel extends StatelessWidget {
               color: const Color(0xFFF2EFEA),
               child: imagePath == null
                   ? Center(
-                      child: Text('Preview appears here', style: AppTextStyles.bodySmall),
+                      child: Text(
+                        'Preview appears here',
+                        style: AppTextStyles.bodySmall,
+                      ),
                     )
                   : Image.file(File(imagePath!), fit: BoxFit.cover),
             ),
@@ -533,10 +558,7 @@ class _UploadPanel extends StatelessWidget {
                 child: const Text('Pick Image'),
               ),
               const SizedBox(width: 8),
-              OutlinedButton(
-                onPressed: onClear,
-                child: const Text('Clear'),
-              ),
+              OutlinedButton(onPressed: onClear, child: const Text('Clear')),
             ],
           ),
         ],
@@ -576,7 +598,9 @@ class _ActionPanel extends StatelessWidget {
               children: [
                 Text(
                   'Active Endpoint',
-                  style: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w700),
+                  style: AppTextStyles.labelLarge.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(endpoint, style: AppTextStyles.bodySmall),
@@ -634,12 +658,17 @@ class _DetailedResultCard extends StatelessWidget {
         children: [
           Text(
             '$title Response',
-            style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
+            style: AppTextStyles.titleMedium.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 2),
-          Text(endpoint, style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.onSurfaceVariant,
-          )),
+          Text(
+            endpoint,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: 14),
           if (explanation != null && explanation!.trim().isNotEmpty) ...[
             Container(
@@ -649,7 +678,9 @@ class _DetailedResultCard extends StatelessWidget {
                 color: hasError ? Colors.red.shade50 : const Color(0xFFF0F8F5),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: hasError ? Colors.red.shade200 : AppColors.primary.withValues(alpha: 0.2),
+                  color: hasError
+                      ? Colors.red.shade200
+                      : AppColors.primary.withValues(alpha: 0.2),
                 ),
               ),
               child: Text(

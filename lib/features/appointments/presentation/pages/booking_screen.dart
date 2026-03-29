@@ -12,10 +12,7 @@ import 'appointment_confirmation_screen.dart';
 class BookingScreen extends StatefulWidget {
   final DoctorModel doctor;
 
-  const BookingScreen({
-    super.key,
-    required this.doctor,
-  });
+  const BookingScreen({super.key, required this.doctor});
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
@@ -72,10 +69,7 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
             Text(
               'Dr. ${widget.doctor.fullName}',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ],
         ),
@@ -187,9 +181,11 @@ class _BookingScreenState extends State<BookingScreen> {
                     scrollDirection: Axis.horizontal,
                     itemCount: 7,
                     itemBuilder: (context, index) {
-                      final date =
-                          DateTime.now().add(Duration(days: index + 1));
-                      final isSelected = _selectedDate?.day == date.day &&
+                      final date = DateTime.now().add(
+                        Duration(days: index + 1),
+                      );
+                      final isSelected =
+                          _selectedDate?.day == date.day &&
                           _selectedDate?.month == date.month &&
                           _selectedDate?.year == date.year;
 
@@ -354,8 +350,9 @@ class _BookingScreenState extends State<BookingScreen> {
                                     if (_selectedDate == null ||
                                         _selectedTime == null ||
                                         _reasonController.text.isEmpty) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
                                           content: Text(
                                             'Please fill all required fields',
@@ -374,22 +371,27 @@ class _BookingScreenState extends State<BookingScreen> {
                                       _selectedTime!.minute,
                                     );
 
-                                    final authState = context.read<AuthCubit>().state;
-                                    final currentUserId = authState is AuthAuthenticated
+                                    final authState = context
+                                        .read<AuthCubit>()
+                                        .state;
+                                    final currentUserId =
+                                        authState is AuthAuthenticated
                                         ? authState.user.id
                                         : null;
 
-                                    context.read<AppointmentCubit>()
+                                    context
+                                        .read<AppointmentCubit>()
                                         .bookAppointment(
                                           doctorId: widget.doctor.id,
                                           appointmentDateTime:
                                               appointmentDateTime,
-                                        doctorName: widget.doctor.fullName,
-                                        doctorExpertise: widget.doctor.expertise,
+                                          doctorName: widget.doctor.fullName,
+                                          doctorExpertise:
+                                              widget.doctor.expertise,
                                           reasonForVisit:
                                               _reasonController.text,
-                                          notes: _notesController.text
-                                                  .isNotEmpty
+                                          notes:
+                                              _notesController.text.isNotEmpty
                                               ? _notesController.text
                                               : null,
                                           patientType: _patientType,
@@ -405,8 +407,8 @@ class _BookingScreenState extends State<BookingScreen> {
                                       child: CircularProgressIndicator(
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
-                                        ),
+                                              Colors.white,
+                                            ),
                                         strokeWidth: 2,
                                       ),
                                     )

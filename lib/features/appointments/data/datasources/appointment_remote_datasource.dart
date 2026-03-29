@@ -31,7 +31,9 @@ class AppointmentRemoteDataSource {
       if (response.statusCode == 200) {
         final data = response.data;
         final doctors = List<DoctorModel>.from(
-          (data['doctors'] as List).map((doctor) => DoctorModel.fromJson(doctor)),
+          (data['doctors'] as List).map(
+            (doctor) => DoctorModel.fromJson(doctor),
+          ),
         );
         return doctors;
       } else {
@@ -58,7 +60,8 @@ class AppointmentRemoteDataSource {
         'appointmentDateTime': appointmentDateTime.toIso8601String(),
         'reasonForVisit': reasonForVisit,
         if (notes != null && notes.isNotEmpty) 'notes': notes,
-        if (patientType != null && patientType.isNotEmpty) 'patientType': patientType,
+        if (patientType != null && patientType.isNotEmpty)
+          'patientType': patientType,
       };
 
       final response = await apiClient.post(
@@ -89,7 +92,9 @@ class AppointmentRemoteDataSource {
         final data = response.data;
         final rawAppointments = (data['appointments'] as List?) ?? const [];
         final appointments = List<AppointmentModel>.from(
-          rawAppointments.map((apt) => AppointmentModel.fromJson(apt as Map<String, dynamic>)),
+          rawAppointments.map(
+            (apt) => AppointmentModel.fromJson(apt as Map<String, dynamic>),
+          ),
         );
         return appointments;
       } else {

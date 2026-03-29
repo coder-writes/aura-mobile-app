@@ -58,7 +58,7 @@ class AppointmentModel {
       'Sep',
       'Oct',
       'Nov',
-      'Dec'
+      'Dec',
     ];
     return months[month - 1];
   }
@@ -89,7 +89,8 @@ class AppointmentModel {
     String? parsedDoctorExpertise;
 
     if (doctorRaw is Map<String, dynamic>) {
-      parsedDoctorId = doctorRaw['_id']?.toString() ?? doctorRaw['id']?.toString() ?? '';
+      parsedDoctorId =
+          doctorRaw['_id']?.toString() ?? doctorRaw['id']?.toString() ?? '';
       final firstName = doctorRaw['firstName']?.toString() ?? '';
       final lastName = doctorRaw['lastName']?.toString() ?? '';
       final fullName = '$firstName $lastName'.trim();
@@ -102,7 +103,8 @@ class AppointmentModel {
         parsedDoctorExpertise = expertiseRaw.toString();
       }
     } else {
-      parsedDoctorId = doctorRaw?.toString() ?? json['doctorId']?.toString() ?? '';
+      parsedDoctorId =
+          doctorRaw?.toString() ?? json['doctorId']?.toString() ?? '';
     }
 
     parsedDoctorName ??= json['doctorName']?.toString();
@@ -112,12 +114,16 @@ class AppointmentModel {
       id: json['_id'] ?? json['id'] ?? '',
       doctorId: parsedDoctorId,
       patientId: json['patient'] ?? json['patientId'] ?? '',
-      appointmentDateTime: DateTime.parse(json['appointmentDateTime'] ?? DateTime.now().toIso8601String()),
+      appointmentDateTime: DateTime.parse(
+        json['appointmentDateTime'] ?? DateTime.now().toIso8601String(),
+      ),
       reasonForVisit: json['reasonForVisit'] ?? '',
       notes: json['notes'],
       queueNumber: json['queueNumber'] ?? 0,
       status: json['status'] ?? 'Scheduled',
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
       patientType: json['patientType']?.toString(),
       doctorName: parsedDoctorName,
       doctorExpertise: parsedDoctorExpertise,

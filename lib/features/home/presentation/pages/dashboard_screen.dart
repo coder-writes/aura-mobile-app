@@ -56,10 +56,15 @@ class DashboardScreen extends StatelessWidget {
               },
               borderRadius: BorderRadius.circular(24),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: AppColors.outlineVariant.withValues(alpha: 0.5),
+                  ),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
@@ -71,7 +76,11 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.language_rounded, size: 16, color: AppColors.primary),
+                    const Icon(
+                      Icons.language_rounded,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       l10n.languageSwitch,
@@ -94,15 +103,19 @@ class DashboardScreen extends StatelessWidget {
           children: [
             // 1. Hero Section
             const _HeroSection(),
-            
+
             const SizedBox(height: 24),
-            
+
             // 2. Quick Actions
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
                 children: [
-                  const Icon(Icons.bolt_rounded, size: 20, color: AppColors.primary),
+                  const Icon(
+                    Icons.bolt_rounded,
+                    size: 20,
+                    color: AppColors.primary,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     l10n.quickActions,
@@ -165,15 +178,19 @@ class DashboardScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // 3. Recent Activity
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
                 children: [
-                  const Icon(Icons.history_rounded, size: 20, color: AppColors.primary),
+                  const Icon(
+                    Icons.history_rounded,
+                    size: 20,
+                    color: AppColors.primary,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     l10n.recentActivity,
@@ -206,9 +223,9 @@ class DashboardScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // 4. AI Tip Banner
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.0),
@@ -220,13 +237,17 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80.0), // Padding to clear the bottom nav bar
+        padding: const EdgeInsets.only(
+          bottom: 80.0,
+        ), // Padding to clear the bottom nav bar
         child: FloatingActionButton.extended(
           onPressed: () => context.push('/aura-chat'),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
           icon: const Icon(Icons.auto_awesome_rounded),
           label: const Text(
             'AURA AI',
@@ -279,7 +300,7 @@ class _HeroSection extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Main Hero Card
           BlocBuilder<AuthCubit, AuthState>(
             builder: (context, state) {
@@ -319,24 +340,26 @@ class _HeroSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // Stat Chips
                     Wrap(
                       spacing: 8,
                       runSpacing: 10,
                       children: [
                         _StatChip(
-                          label: AppLocalizations.of(context)!.scansDone, 
+                          label: AppLocalizations.of(context)!.scansDone,
                           color: AppColors.secondaryContainer,
                           icon: Icons.check_circle_outline_rounded,
                         ),
                         _StatChip(
-                          label: AppLocalizations.of(context)!.appointmentsPending, 
+                          label: AppLocalizations.of(
+                            context,
+                          )!.appointmentsPending,
                           color: AppColors.secondaryContainer,
                           icon: Icons.calendar_today_rounded,
                         ),
                         _StatChip(
-                          label: AppLocalizations.of(context)!.abhaLinked, 
+                          label: AppLocalizations.of(context)!.abhaLinked,
                           color: AppColors.secondaryContainer,
                           icon: Icons.badge_rounded,
                         ),
@@ -358,7 +381,11 @@ class _StatChip extends StatelessWidget {
   final Color color;
   final IconData icon;
 
-  const _StatChip({required this.label, required this.color, required this.icon});
+  const _StatChip({
+    required this.label,
+    required this.color,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {

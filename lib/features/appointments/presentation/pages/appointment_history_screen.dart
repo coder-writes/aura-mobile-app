@@ -12,7 +12,8 @@ class AppointmentHistoryScreen extends StatefulWidget {
   const AppointmentHistoryScreen({super.key});
 
   @override
-  State<AppointmentHistoryScreen> createState() => _AppointmentHistoryScreenState();
+  State<AppointmentHistoryScreen> createState() =>
+      _AppointmentHistoryScreenState();
 }
 
 class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
@@ -26,9 +27,9 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
       final authState = context.read<AuthCubit>().state;
       final userId = authState is AuthAuthenticated ? authState.user.id : null;
       context.read<AppointmentCubit>().loadAppointments(
-            forceRefresh: true,
-            currentUserId: userId,
-          );
+        forceRefresh: true,
+        currentUserId: userId,
+      );
     });
   }
 
@@ -90,11 +91,13 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                     actionLabel: 'Retry',
                     onTap: () {
                       final authState = context.read<AuthCubit>().state;
-                      final userId = authState is AuthAuthenticated ? authState.user.id : null;
+                      final userId = authState is AuthAuthenticated
+                          ? authState.user.id
+                          : null;
                       context.read<AppointmentCubit>().loadAppointments(
-                            forceRefresh: true,
-                            currentUserId: userId,
-                          );
+                        forceRefresh: true,
+                        currentUserId: userId,
+                      );
                     },
                   );
                 }
@@ -103,10 +106,13 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                     ? state.appointments
                     : <AppointmentModel>[];
 
-                final filtered = appointments.where((item) {
-                  if (_filter == 'all') return true;
-                  return (item.patientType ?? 'self').toLowerCase() == _filter;
-                }).toList(growable: false);
+                final filtered = appointments
+                    .where((item) {
+                      if (_filter == 'all') return true;
+                      return (item.patientType ?? 'self').toLowerCase() ==
+                          _filter;
+                    })
+                    .toList(growable: false);
 
                 if (filtered.isEmpty) {
                   return _HistoryMessage(
@@ -114,11 +120,13 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                     actionLabel: 'Refresh',
                     onTap: () {
                       final authState = context.read<AuthCubit>().state;
-                      final userId = authState is AuthAuthenticated ? authState.user.id : null;
+                      final userId = authState is AuthAuthenticated
+                          ? authState.user.id
+                          : null;
                       context.read<AppointmentCubit>().loadAppointments(
-                            forceRefresh: true,
-                            currentUserId: userId,
-                          );
+                        forceRefresh: true,
+                        currentUserId: userId,
+                      );
                     },
                   );
                 }
@@ -126,16 +134,19 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                 return RefreshIndicator(
                   onRefresh: () {
                     final authState = context.read<AuthCubit>().state;
-                    final userId = authState is AuthAuthenticated ? authState.user.id : null;
+                    final userId = authState is AuthAuthenticated
+                        ? authState.user.id
+                        : null;
                     return context.read<AppointmentCubit>().loadAppointments(
-                          forceRefresh: true,
-                          currentUserId: userId,
-                        );
+                      forceRefresh: true,
+                      currentUserId: userId,
+                    );
                   },
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
                     itemCount: filtered.length,
-                    separatorBuilder: (context, _) => const SizedBox(height: 10),
+                    separatorBuilder: (context, _) =>
+                        const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final appointment = filtered[index];
                       return _HistoryCard(appointment: appointment);
@@ -205,7 +216,9 @@ class _HistoryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,16 +227,24 @@ class _HistoryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  appointment.doctorName == null || appointment.doctorName!.trim().isEmpty
+                  appointment.doctorName == null ||
+                          appointment.doctorName!.trim().isEmpty
                       ? 'Doctor ID: ${appointment.doctorId}'
                       : 'Dr. ${appointment.doctorName}',
-                  style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
+                  style: AppTextStyles.titleMedium.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: isSelf ? const Color(0xFFE8F5F1) : const Color(0xFFFFF2DF),
+                  color: isSelf
+                      ? const Color(0xFFE8F5F1)
+                      : const Color(0xFFFFF2DF),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
@@ -236,45 +257,60 @@ class _HistoryCard extends StatelessWidget {
               ),
             ],
           ),
-          if (appointment.doctorExpertise != null && appointment.doctorExpertise!.trim().isNotEmpty) ...[
+          if (appointment.doctorExpertise != null &&
+              appointment.doctorExpertise!.trim().isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               appointment.doctorExpertise!,
-              style: AppTextStyles.bodySmall.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ],
           const SizedBox(height: 10),
-          Text(
-            appointment.reasonForVisit,
-            style: AppTextStyles.bodyMedium,
-          ),
+          Text(appointment.reasonForVisit, style: AppTextStyles.bodyMedium),
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(Icons.event_rounded, size: 16, color: AppColors.onSurfaceVariant),
+              const Icon(
+                Icons.event_rounded,
+                size: 16,
+                color: AppColors.onSurfaceVariant,
+              ),
               const SizedBox(width: 6),
               Text(
                 '${appointment.formattedDate} • ${appointment.formattedTime}',
-                style: AppTextStyles.bodySmall.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.info_outline_rounded, size: 16, color: AppColors.onSurfaceVariant),
+              const Icon(
+                Icons.info_outline_rounded,
+                size: 16,
+                color: AppColors.onSurfaceVariant,
+              ),
               const SizedBox(width: 6),
               Text(
                 'Status: ${appointment.status}',
-                style: AppTextStyles.bodySmall.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
             ],
           ),
-          if (appointment.notes != null && appointment.notes!.trim().isNotEmpty) ...[
+          if (appointment.notes != null &&
+              appointment.notes!.trim().isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(
               'Notes: ${appointment.notes}',
-              style: AppTextStyles.bodySmall.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ],
         ],
@@ -305,13 +341,12 @@ class _HistoryMessage extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: onTap,
-              child: Text(actionLabel),
-            ),
+            OutlinedButton(onPressed: onTap, child: Text(actionLabel)),
           ],
         ),
       ),

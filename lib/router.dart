@@ -18,7 +18,8 @@ class AppRouter {
 
   AppRouter({required this.authCubit});
 
-  static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> rootNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -33,7 +34,8 @@ class AppRouter {
           state.matchedLocation == '/signup' ||
           state.matchedLocation == '/otp' ||
           state.matchedLocation == '/splash';
-      final isVerificationSuccessRoute = state.matchedLocation == '/verification-success';
+      final isVerificationSuccessRoute =
+          state.matchedLocation == '/verification-success';
       final isAuthenticated = authState is AuthAuthenticated;
       final isLoading = authState is AuthLoading || authState is AuthInitial;
 
@@ -43,15 +45,22 @@ class AppRouter {
         return null;
       }
 
-      if (!isAuthenticated && !isPublicAuthRoute && !isVerificationSuccessRoute) return '/splash';
+      if (!isAuthenticated && !isPublicAuthRoute && !isVerificationSuccessRoute)
+        return '/splash';
       if (!isAuthenticated && isVerificationSuccessRoute) return '/login';
-      if (isAuthenticated && (isPublicAuthRoute || state.matchedLocation == '/splash')) return '/';
+      if (isAuthenticated &&
+          (isPublicAuthRoute || state.matchedLocation == '/splash'))
+        return '/';
 
       return null;
     },
 
     routes: [
-      GoRoute(path: '/login', name: 'login', builder: (context, state) => const LoginPage()),
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginPage(),
+      ),
       GoRoute(
         path: '/signup',
         name: 'signup',
@@ -61,8 +70,8 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: '/otp', 
-        name: 'otp', 
+        path: '/otp',
+        name: 'otp',
         builder: (context, state) {
           final extra = state.extra;
           if (extra is Map<String, dynamic>) {
@@ -75,7 +84,7 @@ class AppRouter {
 
           final email = extra as String?;
           return OtpPage(flow: 'signup', email: email);
-        }
+        },
       ),
       GoRoute(
         path: '/verification-success',
@@ -95,20 +104,20 @@ class AppRouter {
       GoRoute(
         path: '/scan-eye',
         name: 'scan-eye',
-        builder: (context, state) => const ScanPage(
-          initialMode: ScanMode.eye,
-          lockMode: true,
-        ),
+        builder: (context, state) =>
+            const ScanPage(initialMode: ScanMode.eye, lockMode: true),
       ),
       GoRoute(
         path: '/scan-tb',
         name: 'scan-tb',
-        builder: (context, state) => const ScanPage(
-          initialMode: ScanMode.tb,
-          lockMode: true,
-        ),
+        builder: (context, state) =>
+            const ScanPage(initialMode: ScanMode.tb, lockMode: true),
       ),
-      GoRoute(path: '/splash', name: 'splash', builder: (context, state) => const SplashScreen()),
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         path: '/',
         name: 'home',
@@ -125,7 +134,7 @@ class AppRouter {
         },
       ),
     ],
-    
+
     errorBuilder: (context, state) => Scaffold(
       body: Center(child: Text('Page not found: ${state.uri.path}')),
     ),

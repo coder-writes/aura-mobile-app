@@ -18,7 +18,8 @@ class AppointmentCubit extends Cubit<AppointmentState> {
 
   Future<List<AppointmentModel>> _readLocalAppointments(String userId) async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getStringList(_localHistoryKey(userId)) ?? const <String>[];
+    final raw =
+        prefs.getStringList(_localHistoryKey(userId)) ?? const <String>[];
 
     return raw
         .map((item) {
@@ -41,32 +42,49 @@ class AppointmentCubit extends Cubit<AppointmentState> {
     List<AppointmentModel> appointments,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    final payload = appointments.map((item) => jsonEncode(item.toJson())).toList(growable: false);
+    final payload = appointments
+        .map((item) => jsonEncode(item.toJson()))
+        .toList(growable: false);
     await prefs.setStringList(_localHistoryKey(userId), payload);
   }
 
   String? _pickBetterText(String? first, String? second) {
     final normalizedFirst = first?.trim();
-    if (normalizedFirst != null && normalizedFirst.isNotEmpty) return normalizedFirst;
+    if (normalizedFirst != null && normalizedFirst.isNotEmpty)
+      return normalizedFirst;
     final normalizedSecond = second?.trim();
-    if (normalizedSecond != null && normalizedSecond.isNotEmpty) return normalizedSecond;
+    if (normalizedSecond != null && normalizedSecond.isNotEmpty)
+      return normalizedSecond;
     return null;
   }
 
-  AppointmentModel _mergeAppointment(AppointmentModel base, AppointmentModel incoming) {
+  AppointmentModel _mergeAppointment(
+    AppointmentModel base,
+    AppointmentModel incoming,
+  ) {
     return base.copyWith(
       doctorName: _pickBetterText(base.doctorName, incoming.doctorName),
-      doctorExpertise: _pickBetterText(base.doctorExpertise, incoming.doctorExpertise),
+      doctorExpertise: _pickBetterText(
+        base.doctorExpertise,
+        incoming.doctorExpertise,
+      ),
       notes: _pickBetterText(base.notes, incoming.notes),
       patientType: _pickBetterText(base.patientType, incoming.patientType),
       status: _pickBetterText(base.status, incoming.status) ?? base.status,
-      reasonForVisit: _pickBetterText(base.reasonForVisit, incoming.reasonForVisit) ?? base.reasonForVisit,
-      doctorId: _pickBetterText(base.doctorId, incoming.doctorId) ?? base.doctorId,
-      patientId: _pickBetterText(base.patientId, incoming.patientId) ?? base.patientId,
+      reasonForVisit:
+          _pickBetterText(base.reasonForVisit, incoming.reasonForVisit) ??
+          base.reasonForVisit,
+      doctorId:
+          _pickBetterText(base.doctorId, incoming.doctorId) ?? base.doctorId,
+      patientId:
+          _pickBetterText(base.patientId, incoming.patientId) ?? base.patientId,
     );
   }
 
-  List<AppointmentModel> _mergeUniqueById(List<AppointmentModel> primary, List<AppointmentModel> secondary) {
+  List<AppointmentModel> _mergeUniqueById(
+    List<AppointmentModel> primary,
+    List<AppointmentModel> secondary,
+  ) {
     final merged = <AppointmentModel>[];
     final indexById = <String, int>{};
 
@@ -123,17 +141,25 @@ class AppointmentCubit extends Cubit<AppointmentState> {
           final enrichedAppointment = appointment.copyWith(
             doctorName: (appointment.doctorName?.trim().isNotEmpty ?? false)
                 ? appointment.doctorName
-                : (normalizedDoctorName?.isNotEmpty == true ? normalizedDoctorName : null),
-            doctorExpertise: (appointment.doctorExpertise?.trim().isNotEmpty ?? false)
+                : (normalizedDoctorName?.isNotEmpty == true
+                      ? normalizedDoctorName
+                      : null),
+            doctorExpertise:
+                (appointment.doctorExpertise?.trim().isNotEmpty ?? false)
                 ? appointment.doctorExpertise
-                : (normalizedDoctorExpertise?.isNotEmpty == true ? normalizedDoctorExpertise : null),
+                : (normalizedDoctorExpertise?.isNotEmpty == true
+                      ? normalizedDoctorExpertise
+                      : null),
           );
 
-          final resolvedUserId = (currentUserId != null && currentUserId.trim().isNotEmpty)
+          final resolvedUserId =
+              (currentUserId != null && currentUserId.trim().isNotEmpty)
               ? currentUserId.trim()
               : enrichedAppointment.patientId.trim();
 
-          _cachedAppointments = _mergeUniqueById([enrichedAppointment], _cachedAppointments);
+          _cachedAppointments = _mergeUniqueById([
+            enrichedAppointment,
+          ], _cachedAppointments);
 
           if (resolvedUserId.isNotEmpty) {
             final local = await _readLocalAppointments(resolvedUserId);
@@ -160,7 +186,9 @@ class AppointmentCubit extends Cubit<AppointmentState> {
       _cachedAppointments = [];
     }
 
-    final localAppointments = userId.isEmpty ? const <AppointmentModel>[] : await _readLocalAppointments(userId);
+    final localAppointments = userId.isEmpty
+        ? const <AppointmentModel>[]
+        : await _readLocalAppointments(userId);
 
     if (!forceRefresh && _cachedAppointments.isNotEmpty) {
       emit(AppointmentHistoryLoaded(appointments: _cachedAppointments));

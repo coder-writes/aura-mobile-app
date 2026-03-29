@@ -19,7 +19,7 @@ class AppTheme {
         surfaceContainerLowest: AppColors.surfaceContainerLowest,
         outlineVariant: AppColors.outlineVariant,
       ),
-      
+
       // Typography
       textTheme: TextTheme(
         displayLarge: AppTextStyles.displayLarge,
@@ -50,14 +50,19 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24), // xl = 1.5rem
           ),
-          textStyle: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.bold),
+          textStyle: AppTextStyles.titleMedium.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceContainerLow,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
@@ -73,7 +78,9 @@ class AppTheme {
             width: 1.5,
           ),
         ),
-        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.onSurfaceVariant.withValues(alpha: 0.4)),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
+        ),
         labelStyle: AppTextStyles.labelLarge,
       ),
 
@@ -89,7 +96,7 @@ class AppTheme {
         ),
         margin: const EdgeInsets.symmetric(vertical: 8),
       ),
-      
+
       dividerTheme: const DividerThemeData(
         thickness: 0,
         color: Colors.transparent, // Disable standard dividers
@@ -97,5 +104,6 @@ class AppTheme {
     );
   }
 
-  static ThemeData get darkTheme => lightTheme.copyWith(brightness: Brightness.dark);
+  static ThemeData get darkTheme =>
+      lightTheme.copyWith(brightness: Brightness.dark);
 }

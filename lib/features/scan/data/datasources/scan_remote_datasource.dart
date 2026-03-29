@@ -19,15 +19,11 @@ class ScanRemoteDataSource {
     return _callEndpoint(path: '/predict/tb', imagePath: imagePath);
   }
 
-  Future<Map<String, dynamic>> runEyeScan({
-    required String imagePath,
-  }) async {
+  Future<Map<String, dynamic>> runEyeScan({required String imagePath}) async {
     return _callEndpoint(path: '/predict/eye-disease', imagePath: imagePath);
   }
 
-  Future<Map<String, dynamic>> runAnemiaScan({
-    required String imagePath,
-  }) {
+  Future<Map<String, dynamic>> runAnemiaScan({required String imagePath}) {
     return runEyeScan(imagePath: imagePath);
   }
 
