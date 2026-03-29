@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../auth/presentation/cubit/auth_state.dart';
 import '../../data/models/doctor_model.dart';
 import '../cubit/appointment_cubit.dart';
 import '../widgets/time_slot_widget.dart';
@@ -372,11 +374,18 @@ class _BookingScreenState extends State<BookingScreen> {
                                       _selectedTime!.minute,
                                     );
 
+                                    final authState = context.read<AuthCubit>().state;
+                                    final currentUserId = authState is AuthAuthenticated
+                                        ? authState.user.id
+                                        : null;
+
                                     context.read<AppointmentCubit>()
                                         .bookAppointment(
                                           doctorId: widget.doctor.id,
                                           appointmentDateTime:
                                               appointmentDateTime,
+                                        doctorName: widget.doctor.fullName,
+                                        doctorExpertise: widget.doctor.expertise,
                                           reasonForVisit:
                                               _reasonController.text,
                                           notes: _notesController.text
@@ -384,6 +393,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                               ? _notesController.text
                                               : null,
                                           patientType: _patientType,
+                                          currentUserId: currentUserId,
                                         );
                                   },
                             borderRadius: BorderRadius.circular(16),

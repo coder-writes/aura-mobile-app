@@ -21,7 +21,11 @@ class AuraBottomNavBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.8),
-        border: Border(top: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.2))),
+        border: Border(
+          top: BorderSide(
+            color: AppColors.outlineVariant.withValues(alpha: 0.2),
+          ),
+        ),
         boxShadow: const [
           BoxShadow(
             color: Color(0x140A6E5E), // 8% opacity teal tint

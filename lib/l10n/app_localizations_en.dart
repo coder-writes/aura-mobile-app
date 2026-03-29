@@ -18,7 +18,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickActions => 'QUICK ACTIONS';
 
   @override
-  String get anemiaScan => 'Anemia Scan';
+  String get anemiaScan => 'Eye Scan';
 
   @override
   String get instantCheck => 'Instant Check';
@@ -45,7 +45,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentActivity => 'RECENT ACTIVITY';
 
   @override
-  String get anemiaScanCompleted => 'Anemia Scan Completed';
+  String get anemiaScanCompleted => 'Eye Scan Completed';
 
   @override
   String get resultHealthyRange => 'Result: Healthy Range';

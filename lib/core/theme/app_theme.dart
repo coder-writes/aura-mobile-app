@@ -45,7 +45,8 @@ class AppTheme {
           elevation: 0,
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 56),
+          // Avoid forcing infinite width globally; row/inline buttons need bounded constraints.
+          minimumSize: const Size(0, 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24), // xl = 1.5rem
           ),

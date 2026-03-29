@@ -132,7 +132,7 @@ class DashboardScreen extends StatelessWidget {
                     title: l10n.anemiaScan,
                     subtitle: l10n.instantCheck,
                     onTap: () {
-                      onTabChange?.call(1); // Scan tab
+                      context.push('/scan-eye');
                     },
                   ),
                   QuickActionCard(
@@ -141,7 +141,7 @@ class DashboardScreen extends StatelessWidget {
                     title: l10n.tbScreening,
                     subtitle: l10n.respiratoryAi,
                     onTap: () {
-                      onTabChange?.call(1); // Scan tab (TB is also scanning)
+                      context.push('/scan-tb');
                     },
                   ),
                   QuickActionCard(

@@ -119,7 +119,7 @@ abstract class AppLocalizations {
   /// No description provided for @anemiaScan.
   ///
   /// In en, this message translates to:
-  /// **'Anemia Scan'**
+  /// **'Eye Scan'**
   String get anemiaScan;
 
   /// No description provided for @instantCheck.
@@ -173,7 +173,7 @@ abstract class AppLocalizations {
   /// No description provided for @anemiaScanCompleted.
   ///
   /// In en, this message translates to:
-  /// **'Anemia Scan Completed'**
+  /// **'Eye Scan Completed'**
   String get anemiaScanCompleted;
 
   /// No description provided for @resultHealthyRange.

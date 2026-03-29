@@ -10,6 +10,7 @@ import 'features/auth/presentation/pages/verification_success_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/profile/presentation/pages/edit_profile_page.dart';
 import 'features/chatbot/presentation/pages/chatbot_page.dart';
+import 'features/scan/presentation/pages/scan_page.dart';
 import 'splash_screen.dart';
 
 class AppRouter {
@@ -91,13 +92,35 @@ class AppRouter {
         name: 'aura-chat',
         builder: (context, state) => const ChatbotPage(),
       ),
+      GoRoute(
+        path: '/scan-eye',
+        name: 'scan-eye',
+        builder: (context, state) => const ScanPage(
+          initialMode: ScanMode.eye,
+          lockMode: true,
+        ),
+      ),
+      GoRoute(
+        path: '/scan-tb',
+        name: 'scan-tb',
+        builder: (context, state) => const ScanPage(
+          initialMode: ScanMode.tb,
+          lockMode: true,
+        ),
+      ),
       GoRoute(path: '/splash', name: 'splash', builder: (context, state) => const SplashScreen()),
       GoRoute(
         path: '/',
         name: 'home',
         builder: (context, state) {
           final tab = state.uri.queryParameters['tab'];
-          final initialTabIndex = tab == 'profile' ? 4 : 0;
+          final initialTabIndex = switch (tab) {
+            'scan' => 1,
+            'appointments' => 2,
+            'abha' => 3,
+            'profile' => 4,
+            _ => 0,
+          };
           return HomePage(initialTabIndex: initialTabIndex);
         },
       ),

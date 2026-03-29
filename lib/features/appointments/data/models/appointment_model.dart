@@ -9,6 +9,8 @@ class AppointmentModel {
   final String status;
   final DateTime createdAt;
   final String? patientType; // 'self' or 'family'
+  final String? doctorName;
+  final String? doctorExpertise;
 
   AppointmentModel({
     required this.id,
@@ -21,6 +23,8 @@ class AppointmentModel {
     required this.status,
     required this.createdAt,
     this.patientType,
+    this.doctorName,
+    this.doctorExpertise,
   });
 
   /// Format appointment date for display (e.g., "Oct 12, 2023")
@@ -72,22 +76,51 @@ class AppointmentModel {
       'status': status,
       'createdAt': createdAt.toIso8601String(),
       'patientType': patientType,
+      'doctorName': doctorName,
+      'doctorExpertise': doctorExpertise,
     };
   }
 
   /// Create AppointmentModel from JSON
   factory AppointmentModel.fromJson(Map<String, dynamic> json) {
+    final dynamic doctorRaw = json['doctor'];
+    final String parsedDoctorId;
+    String? parsedDoctorName;
+    String? parsedDoctorExpertise;
+
+    if (doctorRaw is Map<String, dynamic>) {
+      parsedDoctorId = doctorRaw['_id']?.toString() ?? doctorRaw['id']?.toString() ?? '';
+      final firstName = doctorRaw['firstName']?.toString() ?? '';
+      final lastName = doctorRaw['lastName']?.toString() ?? '';
+      final fullName = '$firstName $lastName'.trim();
+      parsedDoctorName = fullName.isEmpty ? null : fullName;
+
+      final expertiseRaw = doctorRaw['expertise'];
+      if (expertiseRaw is List && expertiseRaw.isNotEmpty) {
+        parsedDoctorExpertise = expertiseRaw.first.toString();
+      } else if (expertiseRaw != null) {
+        parsedDoctorExpertise = expertiseRaw.toString();
+      }
+    } else {
+      parsedDoctorId = doctorRaw?.toString() ?? json['doctorId']?.toString() ?? '';
+    }
+
+    parsedDoctorName ??= json['doctorName']?.toString();
+    parsedDoctorExpertise ??= json['doctorExpertise']?.toString();
+
     return AppointmentModel(
       id: json['_id'] ?? json['id'] ?? '',
-      doctorId: json['doctor'] ?? json['doctorId'] ?? '',
+      doctorId: parsedDoctorId,
       patientId: json['patient'] ?? json['patientId'] ?? '',
       appointmentDateTime: DateTime.parse(json['appointmentDateTime'] ?? DateTime.now().toIso8601String()),
       reasonForVisit: json['reasonForVisit'] ?? '',
       notes: json['notes'],
       queueNumber: json['queueNumber'] ?? 0,
-      status: json['status'] ?? 'pending',
+      status: json['status'] ?? 'Scheduled',
       createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      patientType: json['patientType'],
+      patientType: json['patientType']?.toString(),
+      doctorName: parsedDoctorName,
+      doctorExpertise: parsedDoctorExpertise,
     );
   }
 
@@ -103,6 +136,8 @@ class AppointmentModel {
     String? status,
     DateTime? createdAt,
     String? patientType,
+    String? doctorName,
+    String? doctorExpertise,
   }) {
     return AppointmentModel(
       id: id ?? this.id,
@@ -115,6 +150,8 @@ class AppointmentModel {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       patientType: patientType ?? this.patientType,
+      doctorName: doctorName ?? this.doctorName,
+      doctorExpertise: doctorExpertise ?? this.doctorExpertise,
     );
   }
 

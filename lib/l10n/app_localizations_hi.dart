@@ -18,7 +18,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get quickActions => 'त्वरित कार्रवाई';
 
   @override
-  String get anemiaScan => 'एनीमिया स्कैन';
+  String get anemiaScan => 'आई स्कैन';
 
   @override
   String get instantCheck => 'त्वरित जांच';
@@ -45,7 +45,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get recentActivity => 'हाल की गतिविधि';
 
   @override
-  String get anemiaScanCompleted => 'एनीमिया स्कैन पूरा हुआ';
+  String get anemiaScanCompleted => 'आई स्कैन पूरा हुआ';
 
   @override
   String get resultHealthyRange => 'परिणाम: स्वस्थ सीमा';

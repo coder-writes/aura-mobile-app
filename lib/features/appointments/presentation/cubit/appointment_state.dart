@@ -24,3 +24,17 @@ class AppointmentError extends AppointmentState {
   @override
   String toString() => 'AppointmentError($message)';
 }
+
+class AppointmentHistoryLoading extends AppointmentState {}
+
+class AppointmentHistoryLoaded extends AppointmentState {
+  final List<AppointmentModel> appointments;
+
+  AppointmentHistoryLoaded({required this.appointments});
+}
+
+class AppointmentHistoryError extends AppointmentState {
+  final String message;
+
+  AppointmentHistoryError(this.message);
+}

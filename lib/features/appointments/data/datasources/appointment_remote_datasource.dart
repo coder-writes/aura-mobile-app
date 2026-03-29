@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import '../models/doctor_model.dart';
 import '../models/appointment_model.dart';
-import '../../../../../../core/constants/api_constants.dart';
-import '../../../../../../core/network/api_client.dart';
+import '../../../../core/constants/api_constants.dart';
+import '../../../../core/network/api_client.dart';
 
 class AppointmentRemoteDataSource {
   final ApiClient apiClient;
@@ -58,7 +58,7 @@ class AppointmentRemoteDataSource {
         'appointmentDateTime': appointmentDateTime.toIso8601String(),
         'reasonForVisit': reasonForVisit,
         if (notes != null && notes.isNotEmpty) 'notes': notes,
-        'patientType': ?patientType,
+        if (patientType != null && patientType.isNotEmpty) 'patientType': patientType,
       };
 
       final response = await apiClient.post(
@@ -87,8 +87,9 @@ class AppointmentRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = response.data;
+        final rawAppointments = (data['appointments'] as List?) ?? const [];
         final appointments = List<AppointmentModel>.from(
-          (data['appointments'] as List).map((apt) => AppointmentModel.fromJson(apt)),
+          rawAppointments.map((apt) => AppointmentModel.fromJson(apt as Map<String, dynamic>)),
         );
         return appointments;
       } else {
