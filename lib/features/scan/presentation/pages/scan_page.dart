@@ -131,7 +131,13 @@ class _ScanPageState extends State<ScanPage> {
         );
         if (!mounted) return;
         setState(() {
-          _eyeResult = result;
+          if (_isInvalidEyeImageResult(result)) {
+            _eyeResult = null;
+            _eyeError =
+                'Invalid image. Please upload a clear retinal eye image only.';
+          } else {
+            _eyeResult = result;
+          }
         });
       }
     } catch (error) {
@@ -141,7 +147,9 @@ class _ScanPageState extends State<ScanPage> {
         if (_isTbMode) {
           _tbError = message;
         } else {
-          _eyeError = message;
+          _eyeError = _isInvalidEyeImageError(message)
+              ? 'Invalid image. Please upload a clear retinal eye image only.'
+              : message;
         }
       });
     } finally {
@@ -151,6 +159,41 @@ class _ScanPageState extends State<ScanPage> {
         });
       }
     }
+  }
+
+  bool _isInvalidEyeImageError(String message) {
+    final lower = message.toLowerCase();
+    return lower.contains('invalid image') ||
+        lower.contains('not an eye') ||
+        lower.contains('not eye') ||
+        lower.contains('retina not found') ||
+        lower.contains('fundus not found') ||
+        lower.contains('non-retinal') ||
+        lower.contains('not a retinal') ||
+        lower.contains('eye not detected') ||
+        lower.contains('unable to detect eye');
+  }
+
+  bool _isInvalidEyeImageResult(Map<String, dynamic> result) {
+    final raw = result.toString().toLowerCase();
+
+    final explicitlyInvalid =
+        result['isEye'] == false ||
+        result['eyeDetected'] == false ||
+        result['validImage'] == false ||
+        result['invalidImage'] == true;
+
+    if (explicitlyInvalid) return true;
+
+    return raw.contains('invalid image') ||
+        raw.contains('not an eye') ||
+        raw.contains('not eye') ||
+        raw.contains('retina not found') ||
+        raw.contains('fundus not found') ||
+        raw.contains('non-retinal') ||
+        raw.contains('not a retinal') ||
+        raw.contains('eye not detected') ||
+        raw.contains('unable to detect eye');
   }
 
   void _clearImageAndState() {

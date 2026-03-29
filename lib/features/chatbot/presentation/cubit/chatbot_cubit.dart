@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,10 +34,8 @@ class ChatbotState {
 }
 
 class ChatbotCubit extends Cubit<ChatbotState> {
-  ChatbotCubit({
-    required this.repository,
-    required this.authCubit,
-  }) : super(const ChatbotState(messages: []));
+  ChatbotCubit({required this.repository, required this.authCubit})
+    : super(const ChatbotState(messages: []));
 
   static const _historyKey = 'aura_chat_history_v1';
   static const int _maxMessages = 50;
@@ -104,18 +103,19 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         userContext: _buildUserContext(),
       );
 
-      await _appendAssistantMessage(reply);
+      await _appendAssistantMessageProgressive(reply);
       emit(state.copyWith(isTyping: false, error: null));
     } catch (error) {
       final reason = error.toString().replaceFirst('Exception: ', '');
       final isQuotaError =
-          reason.contains('quota') || reason.contains('429') || reason.contains('Too many requests');
+          reason.contains('quota') ||
+          reason.contains('429') ||
+          reason.contains('Too many requests');
       final failed = ChatMessageModel(
         id: _id(),
-        text:
-            isQuotaError
-                ? 'I am temporarily rate-limited by Gemini (quota reached).\nReason: $reason\n\nTry again after 1-2 minutes. If it keeps happening, enable billing or increase quota for this API key.\n\nमैं अभी Gemini quota limit के कारण जवाब नहीं दे पा रही हूं।\nकारण: $reason\n\n1-2 मिनट बाद फिर प्रयास करें। अगर बार-बार हो रहा है, तो इस API key के लिए billing/quota बढ़ाएं।'
-                : 'I am unable to respond right now.\nReason: $reason\n\nPlease retry after checking API key/model/network.\n\nमैं अभी जवाब नहीं दे पा रही हूं।\nकारण: $reason\n\nकृपया API key/model/network जांचकर दोबारा कोशिश करें।',
+        text: isQuotaError
+            ? 'I am temporarily rate-limited by Gemini (quota reached).\nReason: $reason\n\nTry again after 1-2 minutes. If it keeps happening, enable billing or increase quota for this API key.\n\nमैं अभी Gemini quota limit के कारण जवाब नहीं दे पा रही हूं।\nकारण: $reason\n\n1-2 मिनट बाद फिर प्रयास करें। अगर बार-बार हो रहा है, तो इस API key के लिए billing/quota बढ़ाएं।'
+            : 'I am unable to respond right now.\nReason: $reason\n\nPlease retry after checking API key/model/network.\n\nमैं अभी जवाब नहीं दे पा रही हूं।\nकारण: $reason\n\nकृपया API key/model/network जांचकर दोबारा कोशिश करें।',
         isUser: false,
         timestamp: DateTime.now(),
         isError: true,
@@ -123,13 +123,135 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       );
 
       final withError = [...state.messages, failed];
-      emit(state.copyWith(messages: withError, isTyping: false, error: error.toString()));
+      emit(
+        state.copyWith(
+          messages: withError,
+          isTyping: false,
+          error: error.toString(),
+        ),
+      );
       await _persist(withError);
     }
   }
 
   Future<void> retryLast(String prompt) async {
     await sendMessage(prompt);
+  }
+
+  Future<ChatFileAttachment?> uploadFileAttachment(File file) async {
+    try {
+      // Read file bytes immediately to avoid issues with temporary paths
+      final bytes = await file.readAsBytes();
+
+      final mimeType = _getMimeType(file.path);
+      final filename = file.path.split('/').last;
+
+      final attachment = ChatFileAttachment(
+        path: file.path,
+        filename: filename,
+        mimeType: mimeType,
+        size: bytes.length,
+        uploadedAt: DateTime.now(),
+        bytes: bytes,
+      );
+
+      return attachment;
+    } catch (error) {
+      emit(state.copyWith(error: 'Failed to upload file: $error'));
+      return null;
+    }
+  }
+
+  Future<void> sendMessageWithAttachments(
+    String text,
+    List<ChatFileAttachment>? attachments,
+  ) async {
+    final textTrim = text.trim();
+    if ((textTrim.isEmpty && (attachments?.isEmpty ?? true)) || state.isTyping)
+      return;
+
+    final userMessage = ChatMessageModel(
+      id: _id(),
+      text: textTrim,
+      isUser: true,
+      timestamp: DateTime.now(),
+      attachments: attachments == null
+          ? null
+          : List<ChatFileAttachment>.from(attachments),
+    );
+
+    final updated = [...state.messages, userMessage];
+    emit(state.copyWith(messages: updated, isTyping: true, error: null));
+    await _persist(updated);
+
+    try {
+      final reply = await repository.generateReply(
+        history: updated
+            .takeLast(8)
+            .map(
+              (message) => ChatMessageModel(
+                id: message.id,
+                text: message.text.length > 500
+                    ? '${message.text.substring(0, 500)}...'
+                    : message.text,
+                isUser: message.isUser,
+                timestamp: message.timestamp,
+                isError: message.isError,
+                retryPrompt: message.retryPrompt,
+                attachments: message.attachments,
+              ),
+            )
+            .toList(growable: false),
+        userMessage: textTrim,
+        userContext: _buildUserContext(),
+      );
+
+      await _appendAssistantMessageProgressive(reply);
+      emit(state.copyWith(isTyping: false, error: null));
+    } catch (error) {
+      final reason = error.toString().replaceFirst('Exception: ', '');
+      final isQuotaError =
+          reason.contains('quota') ||
+          reason.contains('429') ||
+          reason.contains('Too many requests');
+      final failed = ChatMessageModel(
+        id: _id(),
+        text: isQuotaError
+            ? 'I am temporarily rate-limited by Gemini (quota reached).\nReason: $reason\n\nTry again after 1-2 minutes. If it keeps happening, enable billing or increase quota for this API key.\n\nमैं अभी Gemini quota limit के कारण जवाब नहीं दे पा रही हूं।\nकारण: $reason\n\n1-2 मिनट बाद फिर प्रयास करें। अगर बार-बार हो रहा है, तो इस API key के लिए billing/quota बढ़ाएं।'
+            : 'I am unable to respond right now.\nReason: $reason\n\nPlease retry after checking API key/model/network.\n\nमैं अभी जवाब नहीं दे पा रही हूं।\nकारण: $reason\n\nकृपया API key/model/network जांचकर दोबारा कोशिश करें।',
+        isUser: false,
+        timestamp: DateTime.now(),
+        isError: true,
+        retryPrompt: textTrim,
+      );
+
+      final withError = [...state.messages, failed];
+      emit(
+        state.copyWith(
+          messages: withError,
+          isTyping: false,
+          error: error.toString(),
+        ),
+      );
+      await _persist(withError);
+    }
+  }
+
+  String _getMimeType(String filename) {
+    final ext = filename.split('.').last.toLowerCase();
+    const mimeTypes = {
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'png': 'image/png',
+      'gif': 'image/gif',
+      'webp': 'image/webp',
+      'pdf': 'application/pdf',
+      'doc': 'application/msword',
+      'docx':
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'txt': 'text/plain',
+    };
+    return mimeTypes[ext] ?? 'application/octet-stream';
   }
 
   Future<void> clearChat() async {
@@ -151,13 +273,80 @@ class ChatbotCubit extends Cubit<ChatbotState> {
     await _persist(updated);
   }
 
+  Future<void> _appendAssistantMessageProgressive(String text) async {
+    final cleanedText = text.trim();
+    if (cleanedText.isEmpty) {
+      await _appendAssistantMessage(text);
+      return;
+    }
+
+    final messageId = _id();
+    final timestamp = DateTime.now();
+    var messages = [
+      ...state.messages,
+      ChatMessageModel(
+        id: messageId,
+        text: '',
+        isUser: false,
+        timestamp: timestamp,
+      ),
+    ];
+
+    emit(state.copyWith(messages: messages, isTyping: true, error: null));
+
+    final words = cleanedText
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    if (words.isEmpty) {
+      await _appendAssistantMessage(cleanedText);
+      return;
+    }
+
+    const int wordsPerTick = 8;
+    final buffer = StringBuffer();
+
+    for (var i = 0; i < words.length; i++) {
+      if (buffer.isNotEmpty) {
+        buffer.write(' ');
+      }
+      buffer.write(words[i]);
+
+      final isLastWord = i == words.length - 1;
+      final shouldEmit = isLastWord || ((i + 1) % wordsPerTick == 0);
+      if (!shouldEmit) {
+        continue;
+      }
+
+      final currentText = buffer.toString();
+      final currentAssistant = ChatMessageModel(
+        id: messageId,
+        text: currentText,
+        isUser: false,
+        timestamp: timestamp,
+      );
+
+      messages = [...messages.take(messages.length - 1), currentAssistant];
+      emit(state.copyWith(messages: messages, isTyping: true, error: null));
+
+      if (!isLastWord) {
+        await Future<void>.delayed(const Duration(milliseconds: 35));
+      }
+    }
+
+    await _persist(messages);
+  }
+
   Future<void> _persist(List<ChatMessageModel> messages) async {
     final trimmed = messages.length > _maxMessages
         ? messages.sublist(messages.length - _maxMessages)
         : messages;
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_historyKey, trimmed.map((m) => m.toJson()).toList());
+    await prefs.setStringList(
+      _historyKey,
+      trimmed.map((m) => m.toJson()).toList(),
+    );
   }
 
   Map<String, dynamic> _buildUserContext() {

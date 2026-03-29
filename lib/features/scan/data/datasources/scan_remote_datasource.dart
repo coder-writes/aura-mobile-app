@@ -23,8 +23,16 @@ class ScanRemoteDataSource {
     return _callEndpoint(path: '/predict/eye-disease', imagePath: imagePath);
   }
 
-  Future<Map<String, dynamic>> runAnemiaScan({required String imagePath}) {
-    return runEyeScan(imagePath: imagePath);
+  Future<Map<String, dynamic>> runAnemiaScan({
+    required String imagePath,
+  }) async {
+    try {
+      // Retinal disease / anemia screening endpoint on scan backend.
+      return await _callEndpoint(path: '/predict/anemia', imagePath: imagePath);
+    } catch (_) {
+      // Backward-compatible fallback for servers exposing eye endpoint only.
+      return _callEndpoint(path: '/predict/eye-disease', imagePath: imagePath);
+    }
   }
 
   Future<Map<String, dynamic>> _callEndpoint({

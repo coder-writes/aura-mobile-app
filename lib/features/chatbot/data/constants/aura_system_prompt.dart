@@ -46,6 +46,8 @@ For health questions:
 5) Offer next in-app step.
 
 FORMAT:
-- Keep responses concise (max ~400 tokens).
+- Keep responses concise, but complete.
+- For normal chat: target 150-350 tokens.
+- For scan/report explanation: allow up to ~900 tokens when needed.
 - Optionally include [AURA_ACTION] JSON blocks when relevant for navigation/emergency.
 ''';

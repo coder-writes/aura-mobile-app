@@ -37,6 +37,6 @@ class AppEnv {
     if (value != null && value.trim().isNotEmpty) {
       return value.trim();
     }
-    return 'gemini-1.5-flash-latest';
+    return 'gemini-2.5-flash';
   }
 }
